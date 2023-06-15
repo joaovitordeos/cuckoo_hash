@@ -7,21 +7,22 @@
 #include "libhash.h"
 
 #define TAM_TAB 11
+#define INSERSAO 'i'
+#define REMOCAO 'r'
+
 
 int main (int agrc, char **argv){
     Tabelas_t *t;
+    int chave;
+    char op;
 
     t = criaTabelas(TAM_TAB);
 
-    //for (int i = 0; i < 22 ; i++)
-    //    inclui(i, t);
-
-
-    inclui(10, t);
-    inclui(22, t);
-    inclui(4, t);
-    inclui(15, t);
-    inclui(59, t);
+    while (fscanf(stdin, "%c %d", &op, &chave) != EOF){
+        if (op == INSERSAO) inclui(chave, t);
+        if (op == REMOCAO) exclui(chave, t);
+    }
+    
 
 
     imprimeTab(t, t->nSlots);

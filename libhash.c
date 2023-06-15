@@ -78,12 +78,13 @@ int busca(int chave, Tabelas_t *t){
 
 /*  Inclui a chave em uma das tabelas. */
 void inclui(int chave, Tabelas_t *t){
-    int h1, h2;
+    int h1, ih2;
     
-    h1 = hash1(chave, t->nSlots);
-    h2 = hash2(chave, t->nSlots);
 
-    if (t->T1[h1].status == VAZIO){
+    h1 = hash1(chave, t->nSlots);
+    ih2 = hash2(t->T1[h1].valor, t->nSlots);
+
+    if ((t->T1[h1].status == VAZIO) || (t->T1[h1].status == EXCLUIDO)){
         t->T1[h1].valor = chave;
         t->T1[h1].status = OCUPADO;
         t->nChaves++;
@@ -91,8 +92,8 @@ void inclui(int chave, Tabelas_t *t){
     }
     else if (t->T1[h1].valor == chave) return ;
 
-    t->T2[h2].valor = t->T1[h1].valor;
-    t->T2[h2].status = OCUPADO;
+    t->T2[ih2].valor = t->T1[h1].valor;
+    t->T2[ih2].status = OCUPADO;
 
     t->T1[h1].valor = chave;
     t->nChaves++;
@@ -111,6 +112,9 @@ void exclui(int chave, Tabelas_t *t){
         t->nChaves--;
         return;
     }
+
+    t->T1[h1].status = EXCLUIDO;
+    t->nChaves--;
 }
 
 void imprimeTab(Tabelas_t *t, int nSlots){
