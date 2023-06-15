@@ -73,9 +73,11 @@ int busca(int chave, Tabelas_t *t){
     // Se o local estiver vazio retornará NAO_EXISTE (-1)
     if (t->T1[h1].status == VAZIO) return NAO_EXISTE;
 
+    // Se a chave existir retorna o indice dela em T1
     if (t->T1[h1].valor == chave) return h1;
 
-    return t->T2[h2].valor;
+    // Retorna o indice em T2 usando a função hash2
+    return h2;
 }
 
 /*  Inclui a chave em uma das tabelas. */
