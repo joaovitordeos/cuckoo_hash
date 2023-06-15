@@ -30,7 +30,9 @@ Tabelas_t *criaTabelas(int nSlots){
     // Marca todos os slots como vazios.
     for (i = 0; i < nSlots ; i++){
         s1[i].status = VAZIO;
+        s1[i].local = T1;
         s2[i].status = VAZIO;
+        s2[i].local = T2;
     }
 
     t->nSlots = nSlots;
@@ -81,20 +83,24 @@ void inclui(int chave, Tabelas_t *t){
     int h1, ih2;
     
 
-    h1 = hash1(chave, t->nSlots);
-    ih2 = hash2(t->T1[h1].valor, t->nSlots);
+    h1 = hash1(chave, t->nSlots);           // Hash1 da chave a ser inserida.
 
+    // Se o slot estiver vazio, ou for um slot com um valor excluído uma nova chave será inserida
     if ((t->T1[h1].status == VAZIO) || (t->T1[h1].status == EXCLUIDO)){
         t->T1[h1].valor = chave;
         t->T1[h1].status = OCUPADO;
         t->nChaves++;
         return ;
     }
-    else if (t->T1[h1].valor == chave) return ;
+    else if (t->T1[h1].valor == chave) return ; // Ignorando duplicatas
+    
+    ih2 = hash2(t->T1[h1].valor, t->nSlots);   // Hash2 da chave em T1 que será movida
 
+    // Move a chave presente em T1 para o seu slot em T2 [ h2(ki) ].
     t->T2[ih2].valor = t->T1[h1].valor;
     t->T2[ih2].status = OCUPADO;
 
+    // A nova chave é inserida em T1, no lugar da antiga.
     t->T1[h1].valor = chave;
     t->nChaves++;
     return ;
@@ -107,21 +113,63 @@ void exclui(int chave, Tabelas_t *t){
     h1 = hash1(chave, t->nSlots);
     h2 = hash2(chave, t->nSlots);
 
-    if (t->T2[h2].valor == chave){
+    // Se a chave estiver em T2, ela é removida
+    if ((t->T2[h2].status != VAZIO) &&  (t->T2[h2].valor == chave)){
         t->T2[h2].status = VAZIO;
         t->nChaves--;
         return;
     }
 
+    // Se não ela é removida em T1 e o slot é marcado como EXCLUÍDO
     t->T1[h1].status = EXCLUIDO;
     t->nChaves--;
 }
 
+/*  Função de comparação do parâmetro valor da struct Slot_t para o qsort. */
+int comparaChaves(const void *a, const void *b){
+    Slot_t *x, *y;
+
+    x = (Slot_t *) a;
+    y = (Slot_t *) b;
+
+    if (x->valor > y->valor) return 1;
+    if (x->valor < y->valor) return -1;
+    return 0;
+}
+
+/*  Imprime na saída padrão de forma crescente as chaves presentes nas tabelas,
+    juntamente com sua localização (T1 ou T2) e sua posição no vetor. 
+    
+    Ela usa um vetor de Slot_t auxiliar que é ordenado usand o algoritmo qsort. */
 void imprimeTab(Tabelas_t *t, int nSlots){
-    for (int i = 0; i < nSlots ; i++){  
-        if (t->T1[i].status == OCUPADO)
-            fprintf(stdout, "%d | T1 | %d\n", t->T1[i].valor, i);
-        if (t->T2[i].status == OCUPADO)
-            fprintf(stdout, "%d | T2 | %d\n", t->T2[i].valor, i);
+    int nVal, i;
+    Slot_t *v;
+    
+    v = malloc(sizeof(Slot_t)* 2 * nSlots);
+    if (!v) return;
+
+    // Insere os valores das tabelas no vetor auxiliar de Slot_t 'v'.
+    nVal = 0;
+    for (i = 0; i < nSlots ; i++){  
+        if (t->T1[i].status == OCUPADO){
+            v[nVal] = t->T1[i];
+            nVal++;            
+        }
+        if (t->T2[i].status == OCUPADO){
+            v[nVal] = t->T2[i];
+            nVal++;   
+        }
     }
+    // Ordena usando qsort 
+    qsort(v, nVal, sizeof(Slot_t), comparaChaves);
+
+    // Imprime formatado na saída padrão.
+    for (i = 0; i < nVal ; i++){
+        if (v[i].local == T1)
+            fprintf(stdout, "%d,T1,%d\n", v[i].valor, hash1(v[i].valor, t->nSlots));
+        if (v[i].local == T2)
+            fprintf(stdout, "%d,T2,%d\n", v[i].valor, hash2(v[i].valor, t->nSlots));    
+    }
+
+    free(v);
 }

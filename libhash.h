@@ -6,7 +6,8 @@
 
 // Estrutura de slot que representa cada bloco da tabela Hash.
 typedef struct slot{
-    int valor;              
+    int valor;
+    enum {T1, T2} local;                     // Indica em qual das tabela está o slot             
     enum {VAZIO, OCUPADO, EXCLUIDO} status;  // Situação do slot, se está vazio,ocupado ou se foi uma chave excluída.
 } Slot_t;
 

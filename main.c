@@ -22,8 +22,6 @@ int main (int agrc, char **argv){
         if (op == INSERSAO) inclui(chave, t);
         if (op == REMOCAO) exclui(chave, t);
     }
-    
-
 
     imprimeTab(t, t->nSlots);
 
