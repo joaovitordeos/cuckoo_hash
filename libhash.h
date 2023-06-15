@@ -44,6 +44,10 @@ void inclui(int chave, Tabelas_t *t);
 /*  Exclui a chave das tabelas. */
 void exclui(int chave, Tabelas_t *t);
 
+/*  Imprime na saída padrão de forma crescente as chaves presentes nas tabelas,
+    juntamente com sua localização (T1 ou T2) e sua posição no vetor. 
+    
+    Ela usa um vetor de Slot_t auxiliar que é ordenado usand o algoritmo qsort. */
 void imprimeTab(Tabelas_t *t, int nSlots);
 
 #endif

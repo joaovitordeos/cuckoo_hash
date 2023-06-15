@@ -67,8 +67,8 @@ int hash2(int chave, int slots){
 int busca(int chave, Tabelas_t *t){
     int h1, h2;
 
-    h1 = hash1(chave, t->nSlots);
-    h2 = hash2(chave, t->nSlots);
+    h1 = hash1(abs(chave), t->nSlots);
+    h2 = hash2(abs(chave), t->nSlots);
 
     // Se o local estiver vazio retornará NAO_EXISTE (-1)
     if (t->T1[h1].status == VAZIO) return NAO_EXISTE;
@@ -83,7 +83,7 @@ void inclui(int chave, Tabelas_t *t){
     int h1, ih2;
     
 
-    h1 = hash1(chave, t->nSlots);           // Hash1 da chave a ser inserida.
+    h1 = hash1(abs(chave), t->nSlots);           // Hash1 da chave a ser inserida.
 
     // Se o slot estiver vazio, ou for um slot com um valor excluído uma nova chave será inserida
     if ((t->T1[h1].status == VAZIO) || (t->T1[h1].status == EXCLUIDO)){
@@ -94,7 +94,7 @@ void inclui(int chave, Tabelas_t *t){
     }
     else if (t->T1[h1].valor == chave) return ; // Ignorando duplicatas
     
-    ih2 = hash2(t->T1[h1].valor, t->nSlots);   // Hash2 da chave em T1 que será movida
+    ih2 = hash2(abs(t->T1[h1].valor), t->nSlots);   // Hash2 da chave em T1 que será movida
 
     // Move a chave presente em T1 para o seu slot em T2 [ h2(ki) ].
     t->T2[ih2].valor = t->T1[h1].valor;
@@ -110,8 +110,8 @@ void inclui(int chave, Tabelas_t *t){
 void exclui(int chave, Tabelas_t *t){
     int h1, h2;
 
-    h1 = hash1(chave, t->nSlots);
-    h2 = hash2(chave, t->nSlots);
+    h1 = hash1(abs(chave), t->nSlots);
+    h2 = hash2(abs(chave), t->nSlots);
 
     // Se a chave estiver em T2, ela é removida
     if ((t->T2[h2].status != VAZIO) &&  (t->T2[h2].valor == chave)){
@@ -166,9 +166,9 @@ void imprimeTab(Tabelas_t *t, int nSlots){
     // Imprime formatado na saída padrão.
     for (i = 0; i < nVal ; i++){
         if (v[i].local == T1)
-            fprintf(stdout, "%d,T1,%d\n", v[i].valor, hash1(v[i].valor, t->nSlots));
+            fprintf(stdout, "%d,T1,%d\n", v[i].valor, hash1(abs(v[i].valor), t->nSlots));
         if (v[i].local == T2)
-            fprintf(stdout, "%d,T2,%d\n", v[i].valor, hash2(v[i].valor, t->nSlots));    
+            fprintf(stdout, "%d,T2,%d\n", v[i].valor, hash2(abs(v[i].valor), t->nSlots));    
     }
 
     free(v);
